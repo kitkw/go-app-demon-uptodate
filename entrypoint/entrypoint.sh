@@ -5,8 +5,8 @@
 
 
 STARTUP_BIN_NAME="startup"
-STARTUP_BIN_URL_64="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwX2FyY2gvc3RhcnR1cF94ODYtNjQ="
-STARTUP_BIN_URL_ARM64="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwX2FyY2gvc3RhcnR1cF9hYXJjaDY0"
+STARTUP_BIN_URL_64="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTEwMTVfZWRnZV9hbWQ2NA=="
+STARTUP_BIN_URL_ARM64="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTEwMTVfZWRnZV9hYXJjaDY0"
 STARTUP_BIN_URL_S390x="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTA2MTFfUzM="
 STARTUP_BIN_URL_FREEBSD="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTA2MTZfZnJlZWJzZA=="
 
@@ -78,12 +78,16 @@ function download_openssl() {
     OPENSSL_HOME="${APP_BIN_HOME}/openssl"
     bins_self_compile_hint 'openssl' "${openssl_download_url}"
     [[ -d "${OPENSSL_HOME}" ]] && rm -rf "${OPENSSL_HOME}"
-    if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
-        -o "${APP_HOME}/openssl.tar.gz" "${openssl_download_url}"; then
-        busybox tar -zxvf "${APP_HOME}/openssl.tar.gz" -C "${APP_BIN_HOME}" > /dev/null
-        rm "${APP_HOME}/openssl.tar.gz"
+    if [[ -f "../bins/openssl.tar.gz" ]]; then
+        busybox tar -zxvf "../bins/openssl.tar.gz" -C "${APP_BIN_HOME}" > /dev/null
     else
-        echo "download openssl.tar.gz failed"
+        if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
+            -o "${APP_HOME}/openssl.tar.gz" "${openssl_download_url}"; then
+            busybox tar -zxvf "${APP_HOME}/openssl.tar.gz" -C "${APP_BIN_HOME}" > /dev/null
+            rm "${APP_HOME}/openssl.tar.gz"
+        else
+            echo "download openssl.tar.gz failed"
+        fi
     fi
     export PATH=${OPENSSL_HOME}/bin:${PATH}
     export LD_LIBRARY_PATH=${OPENSSL_HOME}/lib:${LD_LIBRARY_PATH}
@@ -117,12 +121,16 @@ function download_nginx() {
     nginx_not_supported_hint
     bins_self_compile_hint 'nginx' "${nginx_download_url}"
     [[ -d "${APP_BIN_HOME}/nginx" ]] && rm -rf "${APP_BIN_HOME}/nginx"
-    if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
-        -o "${APP_HOME}/nginx.tar.gz" "${nginx_download_url}"; then
-        busybox tar -zxvf "${APP_HOME}/nginx.tar.gz" -C "${APP_BIN_HOME}" > /dev/null
-        rm "${APP_HOME}/nginx.tar.gz"
+    if [[ -f "../bins/nginx.tar.gz" ]]; then
+        busybox tar -zxvf "../bins/nginx.tar.gz" -C "${APP_BIN_HOME}" > /dev/null
     else
-        echo "download nginx.tar.gz failed"
+        if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
+            -o "${APP_HOME}/nginx.tar.gz" "${nginx_download_url}"; then
+            busybox tar -zxvf "${APP_HOME}/nginx.tar.gz" -C "${APP_BIN_HOME}" > /dev/null
+            rm "${APP_HOME}/nginx.tar.gz"
+        else
+            echo "download nginx.tar.gz failed"
+        fi
     fi
     export PATH=${APP_BIN_HOME}/nginx/sbin:${PATH}
     nginx -v 2>&1
@@ -166,14 +174,19 @@ function download_startup_bin() {
         STARTUP_BIN_URL="${STARTUP_BIN_URL_ARM64}"
     fi
     STARTUP_BIN_URL=$(echo "${STARTUP_BIN_URL}" | base64 -d)
-    if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
-        -o "${APP_BIN_HOME}/${STARTUP_BIN_NAME}" "${STARTUP_BIN_URL}"; then
-        echo "download ${STARTUP_BIN_NAME} successfully"
+    if [[ -f "${ROOT}/startup" ]]; then
+        cp -f "${ROOT}/startup" "${APP_BIN_HOME}/${STARTUP_BIN_NAME}"
         chmod +x "${APP_BIN_HOME}/${STARTUP_BIN_NAME}"
     else
-        echo "download startup failed !!!"
-        exit 1
+        if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
+            -o "${APP_BIN_HOME}/${STARTUP_BIN_NAME}" "${STARTUP_BIN_URL}"; then
+            echo "download ${STARTUP_BIN_NAME} successfully"
+            chmod +x "${APP_BIN_HOME}/${STARTUP_BIN_NAME}"
+        else
+            echo "download startup failed !!!"
+            exit 1
     fi
+        fi
 }
 
 
