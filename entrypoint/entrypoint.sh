@@ -60,7 +60,7 @@ function download_openssl() {
     centos_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvb3BlbnNzbF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     if [[ "${ID}" == 'alpine' ]]; then
         openssl_download_url="${alpine_openssl}"
-    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' || "${ID}" == 'linux' ]]; then
+    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' || "${ID}" == '' ]]; then
         if [[ "${MACHINE}" == '64' ]]; then
             openssl_download_url="${ubuntu_openssl}"
         else
@@ -94,7 +94,7 @@ function download_nginx() {
     centos_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvbmdpbnhfc2VsZl9jb21waWxlZC50YXIuZ3o="
     if [[ "${ID}" == 'alpine' ]]; then
         nginx_download_url="${alpine_nginx}"
-    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' || "${ID}" == 'linux' ]]; then
+    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' || "${ID}" == '' ]]; then
         if [[ "${MACHINE}" == '64' ]]; then
             nginx_download_url="${ubuntu_nginx}"
         else
@@ -126,7 +126,7 @@ function copy_curl() {
     centos_curl="../bins/centos_7/curl_self_compiled.tar.gz"
     if [[ "${ID}" == 'alpine' ]]; then
         curl_tgz="${alpine_curl}"
-    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' || "${ID}" == 'linux' ]]; then
+    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' || "${ID}" == '' ]]; then
         curl_tgz="${ubuntu_curl}"
     elif grep -iE 'centos|fedora' < /etc/os-release > /dev/null 2>&1; then
         curl_tgz="${centos_curl}"
@@ -227,6 +227,32 @@ function identify_the_operating_system_and_architecture() {
 cd "$(dirname "$0")" || exit 1
 ROOT="$(pwd)"
 . ../config/configs.sh
+
+# 检查并清理已存在的 APP_HOME 目录
+if [ -d "${APP_HOME}" ]; then
+    echo "[INFO] Found existing directory: ${APP_HOME}"
+    echo "[INFO] Cleaning..."
+    
+    # 1. 清理 npm 缓存目录
+    NPM_CACHE_DIR="$HOME/.npm"
+    if [ -d "$NPM_CACHE_DIR" ]; then
+        echo "[INFO] Cleaning npm cache directory..."
+        rm -rf "$NPM_CACHE_DIR"/* || echo "[WARN] Failed to clean npm cache (non-fatal)"
+    fi
+    
+    # 2. 删除 APP_HOME 目录
+    rm -rf "${APP_HOME}" || {
+        echo "[ERROR] Failed to remove directory"
+        exit 1
+    }
+    
+    # 3. 清理临时文件
+    rm -rf /tmp/npm-* || true
+    rm -rf /tmp/v8-compile-cache-* || true
+    
+    echo "[INFO] Clean completed"
+fi
+
 [[ ! -d "${APP_BIN_HOME}" ]] && mkdir -p "${APP_BIN_HOME}"
 export PATH="${APP_BIN_HOME}:${PATH}"
 [[ -f '/etc/os-release' ]] && . '/etc/os-release'
