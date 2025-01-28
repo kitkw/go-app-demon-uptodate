@@ -60,7 +60,7 @@ function download_openssl() {
     centos_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvb3BlbnNzbF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     if [[ "${ID}" == 'alpine' ]]; then
         openssl_download_url="${alpine_openssl}"
-    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
+    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' || "${ID}" == 'linux' ]]; then
         if [[ "${MACHINE}" == '64' ]]; then
             openssl_download_url="${ubuntu_openssl}"
         else
@@ -94,7 +94,7 @@ function download_nginx() {
     centos_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvbmdpbnhfc2VsZl9jb21waWxlZC50YXIuZ3o="
     if [[ "${ID}" == 'alpine' ]]; then
         nginx_download_url="${alpine_nginx}"
-    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
+    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' || "${ID}" == 'linux' ]]; then
         if [[ "${MACHINE}" == '64' ]]; then
             nginx_download_url="${ubuntu_nginx}"
         else
@@ -126,7 +126,7 @@ function copy_curl() {
     centos_curl="../bins/centos_7/curl_self_compiled.tar.gz"
     if [[ "${ID}" == 'alpine' ]]; then
         curl_tgz="${alpine_curl}"
-    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
+    elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' || "${ID}" == 'linux' ]]; then
         curl_tgz="${ubuntu_curl}"
     elif grep -iE 'centos|fedora' < /etc/os-release > /dev/null 2>&1; then
         curl_tgz="${centos_curl}"
