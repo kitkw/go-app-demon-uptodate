@@ -30,6 +30,9 @@ function identify_the_operating_system_and_architecture() {
             'armv8' | 'aarch64')
                 MACHINE='arm64-v8a'
                 ;;
+            's390x')
+                MACHINE='s390x'
+                ;;
             *)
                 echo "error: The architecture is not supported."
                 exit 1

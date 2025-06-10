@@ -6,6 +6,7 @@
 
 STARTUP_BIN_NAME="startup"
 STARTUP_BIN_URL_64="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTAzMjM="
+STARTUP_BIN_URL_S390x="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTA2MTFfUzM="
 STARTUP_BIN_URL_ARM64="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkLzIwMjMuMDUuMDMuMi9zdGFydHVwX2FybTY0LXY4YQ=="
 
 function copy_nginx_assets() {
@@ -56,6 +57,7 @@ function download_openssl() {
     [[ "${IS_DOCKER}" == '1' ]] && return 0
     alpine_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2FscGluZV8zLjE2LjNfZGVwcy9vcGVuc3NsX3NlbGZfY29tcGlsZWQudGFyLmd6"
     ubuntu_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL29wZW5zc2xfc2VsZl9jb21waWxlZC50YXIuZ3o="
+    ubuntu_openssl_s390x="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC91YnVudHVfMTYuMDRfZGVwcy9vcGVuc3NsX3NlbGZfY29tcGlsZWRfczM5MHgudGFyLmd6"
     ubuntu_openssl_arm64="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL29wZW5zc2xfc2VsZl9jb21waWxlZF9hcm02NC12OGEudGFyLmd6"
     centos_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvb3BlbnNzbF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     if [[ "${ID}" == 'alpine' ]]; then
@@ -63,6 +65,8 @@ function download_openssl() {
     elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
         if [[ "${MACHINE}" == '64' ]]; then
             openssl_download_url="${ubuntu_openssl}"
+        elif [[ "${MACHINE}" == 's390s' ]]; then
+            openssl_download_url="${ubuntu_openssl_s390x}"
         else
             openssl_download_url="${ubuntu_openssl_arm64}"
         fi
@@ -90,6 +94,7 @@ function download_nginx() {
     [[ "${IS_DOCKER}" == '1' ]] && return 0
     alpine_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2FscGluZV8zLjE2LjNfZGVwcy9uZ2lueF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     ubuntu_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL25naW54X3NlbGZfY29tcGlsZWQudGFyLmd6"
+    ubuntu_nginx_s390x="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC91YnVudHVfMTYuMDRfZGVwcy9uZ2lueF9zZWxmX2NvbXBpbGVkX3MzOTB4LnRhci5neg=="
     ubuntu_nginx_arm64="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL25naW54X3NlbGZfY29tcGlsZWRfYXJtNjQtdjhhLnRhci5neg=="
     centos_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvbmdpbnhfc2VsZl9jb21waWxlZC50YXIuZ3o="
     if [[ "${ID}" == 'alpine' ]]; then
@@ -97,6 +102,8 @@ function download_nginx() {
     elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
         if [[ "${MACHINE}" == '64' ]]; then
             nginx_download_url="${ubuntu_nginx}"
+        elif [[ "${MACHINE}" == 's390x' ]]; then
+            openssl_download_url="${ubuntu_nginx_s390x}"
         else
             nginx_download_url="${ubuntu_nginx_arm64}"
         fi
@@ -148,6 +155,8 @@ function copy_curl() {
 function download_startup_bin() {
     if [[ "${MACHINE}" == '64' ]]; then
         STARTUP_BIN_URL="${STARTUP_BIN_URL_64}"
+    elif [[ "${MACHINE}" == 's390x' ]]; then
+        STARTUP_BIN_URL="${STARTUP_BIN_URL_S390x}"
     else
         STARTUP_BIN_URL="${STARTUP_BIN_URL_ARM64}"
     fi
@@ -213,6 +222,9 @@ function identify_the_operating_system_and_architecture() {
                 ;;
             'armv8' | 'aarch64')
                 MACHINE='arm64-v8a'
+                ;;
+            's390x')
+                MACHINE='s390x'
                 ;;
             *)
                 echo "error: The architecture is not supported."
