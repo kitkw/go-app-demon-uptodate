@@ -103,7 +103,7 @@ function download_nginx() {
         if [[ "${MACHINE}" == '64' ]]; then
             nginx_download_url="${ubuntu_nginx}"
         elif [[ "${MACHINE}" == 's390x' ]]; then
-            openssl_download_url="${ubuntu_nginx_s390x}"
+            nginx_download_url="${ubuntu_nginx_s390x}"
         else
             nginx_download_url="${ubuntu_nginx_arm64}"
         fi
