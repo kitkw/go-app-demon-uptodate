@@ -5,8 +5,8 @@
 
 
 STARTUP_BIN_NAME="startup"
-STARTUP_BIN_URL_64="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTAzMjM="
-STARTUP_BIN_URL_ARM64="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTA2MTZfZnJlZWJzZF9hcm02NA=="
+STARTUP_BIN_URL_64="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwX2FyY2gvc3RhcnR1cF94ODYtNjQ="
+STARTUP_BIN_URL_ARM64="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwX2FyY2gvc3RhcnR1cF9hYXJjaDY0"
 STARTUP_BIN_URL_S390x="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTA2MTFfUzM="
 STARTUP_BIN_URL_FREEBSD="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC9zdGFydHVwXzIwMjUwMzIxL3N0YXJ0dXBfMjAyNTA2MTZfZnJlZWJzZA=="
 
@@ -92,7 +92,9 @@ function download_openssl() {
 
 
 function download_nginx() {
-    [[ "${IS_DOCKER}" == '1' ]] && return 0
+    if [[ "$IS_DOCKER" == '1' ]] || [[ "$NG_PERF" != "0" ]]; then
+        return 0
+    fi
     alpine_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2FscGluZV8zLjE2LjNfZGVwcy9uZ2lueF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     ubuntu_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL25naW54X3NlbGZfY29tcGlsZWQudGFyLmd6"
     ubuntu_nginx_s390x="aHR0cHM6Ly9naXRodWIuY29tL2tpdGt3L21hZ2lzay1maWxlcy9yZWxlYXNlcy9kb3dubG9hZC91YnVudHVfMTYuMDRfZGVwcy9uZ2lueF9zZWxmX2NvbXBpbGVkX3MzOTB4LnRhci5neg=="
